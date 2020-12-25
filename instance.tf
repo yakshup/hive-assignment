@@ -27,7 +27,7 @@ data "aws_ami" "ubuntu" {
 resource "aws_instance" "hive_private_1" {
     ami = data.aws_ami.ubuntu.id
     availability_zone = var.aws_availability_zone
-    instance_type = "t2.micro"
+    instance_type = "r5.large"
     key_name = aws_key_pair.deployer.key_name
     vpc_security_group_ids = [aws_security_group.nat.id]
     subnet_id = aws_subnet.hive-private.id
@@ -39,6 +39,8 @@ resource "aws_instance" "hive_private_1" {
 	user_data     = <<-EOF
 			  #!/bin/bash
 			  sudo su
+			  service ufw stop
+			  systemctl disable ufw
 			  apt -y install apache2
 			  echo "<p>Yakshup Goyal Hive Private - 1</p>" >> /var/www/html/index.html
 			  sudo systemctl enable apache2
@@ -48,7 +50,7 @@ resource "aws_instance" "hive_private_1" {
 resource "aws_instance" "hive_private_2" {
     ami = data.aws_ami.ubuntu.id
     availability_zone = var.aws_availability_zone
-    instance_type = "t2.micro"
+    instance_type = "r5.large"
     key_name = aws_key_pair.deployer.key_name
     vpc_security_group_ids = [aws_security_group.nat.id]
     subnet_id = aws_subnet.hive-private.id

@@ -56,6 +56,16 @@ resource "aws_security_group" "nat" {
     vpc_id = aws_default_vpc.default.id
 }
 
+resource "aws_eip" "nat" {
+  tags    = {
+    Name  = "hive-nat-eip"
+  }
+}
+
+resource "aws_nat_gateway" "gw" {
+  allocation_id = aws_eip.nat.id
+  subnet_id     = aws_subnet.hive-private.id
+}
 
 /*
   Private Subnet
@@ -72,7 +82,7 @@ resource "aws_route_table" "hive-private" {
 
     route {
         cidr_block = "0.0.0.0/0"
-        gateway_id = aws_internet_gateway.gw.id
+        gateway_id = aws_nat_gateway.gw.id
     }
 	/*
     route {
